@@ -1,4 +1,4 @@
-/*Date: November 7, 2022
+/*Date: November 9, 2022
  *Author: An Ha
  *Course: ICS4U
  *Description: This objects links to the "plotrectmain" program that calculates the coordinates of a rectangle's 
@@ -148,7 +148,7 @@ public class Rectangle {
 	 * Action: Returns a string of a rectangle's information*/
 	public String toString() {
 		String info = "Bottom Left Coordinate: (" + (botLeftX+1) + ", " + (botLeftY+1) + "), Length: " + length + 
-						", Width: " + width + ", Area: " + (length*width) + ", Perimeter: " + ((2*length) + (2*width));
+						"cm, Width: " + width + "cm, Area: " + (length*width) + "cm^2, Perimeter: " + ((2*length) + (2*width) + "cm");
 		return info;
 	}
 
@@ -167,31 +167,51 @@ public class Rectangle {
 	}
 
 	/* Pre: Rectangle 1 and Rectangle 2
+	 * Post: Boolean of whether the Rectangle 1 is inside of Rectangle 2 or not
+	 * Action: Checks if the Rectangle 1 is inside of Rectangle 2. Returns true if it is.*/
+	private static boolean r1IsInsider2 (Rectangle r1, Rectangle r2) {
+		if (r1.getBotLeftX() >= r2.getBotLeftX() && 
+		r1.getBotLeftY() >= r2.getBotLeftY() &&
+		r1.getTopLeftX() >= r2.getTopLeftX() &&
+		r1.getTopLeftY() <= r2.getTopLeftY() &&
+		r1.getTopRightX() <= r2.getTopRightX() &&
+		r1.getTopRightY() <= r2.getTopRightY() &&
+		r1.getBotRightX() <= r2.getBotRightX() &&
+		r1.getBotRightY() >= r2.getBotRightY()) {
+			return true;
+		} 
+		return false;
+	}
+
+	/* Pre: Rectangle 1 and Rectangle 2
+	 * Post: Boolean of whether the Rectangle 2 is inside of Rectangle 1 or not
+	 * Action: Checks if the Rectangle 2 is inside of Rectangle 1. Returns true if it is.*/
+	private static boolean r2IsInsider1 (Rectangle r1, Rectangle r2) {
+		if (r2.getBotLeftX() >= r1.getBotLeftX() && 
+		r2.getBotLeftY() >= r1.getBotLeftY() &&
+		r2.getTopLeftX() >= r1.getTopLeftX() &&
+		r2.getTopLeftY() <= r1.getTopLeftY() &&
+		r2.getTopRightX() <= r1.getTopRightX() &&
+		r2.getTopRightY() <= r1.getTopRightY() &&
+		r2.getBotRightX() <= r1.getBotRightX() &&
+		r2.getBotRightY() >= r1.getBotRightY()) {
+			return true;
+		} 
+		return false;
+	}
+
+	/* Pre: Rectangle 1 and Rectangle 2
 	 * Post: Void
 	 * Action: Sets the length and width of the mini-rectangle caused by an overlap*/
 	public static void setOverlapDimensions (Rectangle r1, Rectangle r2) {
 		//sets the length and width of the rectangle created by overlap depending on if...
 
 		//r1 is inside of r2
-		if (r1.getBotLeftX() >= r2.getBotLeftX() && 
-			r1.getBotLeftY() >= r2.getBotLeftY() &&
-			r1.getTopLeftX() >= r2.getTopLeftX() &&
-			r1.getTopLeftY() <= r2.getTopLeftY() &&
-			r1.getTopRightX() <= r2.getTopRightX() &&
-			r1.getTopRightY() <= r2.getTopRightY() &&
-			r1.getBotRightX() <= r2.getBotRightX() &&
-			r1.getBotRightY() >= r2.getBotRightY()) {
+		if (r1IsInsider2(r1, r2)) {
 			overlapWidth = r1.getWidth();
 			overlapLength = r1.getLength();
 		//r2 is inside of r1
-		} else if  (r2.getBotLeftX() >= r1.getBotLeftX() && 
-					r2.getBotLeftY() >= r1.getBotLeftY() &&
-					r2.getTopLeftX() >= r1.getTopLeftX() &&
-					r2.getTopLeftY() <= r1.getTopLeftY() &&
-					r2.getTopRightX() <= r1.getTopRightX() &&
-					r2.getTopRightY() <= r1.getTopRightY() &&
-					r2.getBotRightX() <= r1.getBotRightX() &&
-					r2.getBotRightY() >= r1.getBotRightY()) {
+		} else if (r2IsInsider1(r1, r2)) {
 			overlapWidth = r2.getWidth();
 			overlapLength = r2.getLength();
 		//r1 is hortizontally intersecting through r2
@@ -223,19 +243,19 @@ public class Rectangle {
 		//r1 is on the left
 		} else if (r1.getTopRightX() < r2.getTopRightX()) {
 			//r1 engulfs r2
-			if (r1.getTopRightY() > r2.getTopLeftY() && r1.getBotRightY() < r2.getBotLeftY()) {
+			if (r1.getTopRightY() >= r2.getTopLeftY() && r1.getBotRightY() <= r2.getBotLeftY()) {
 				overlapWidth = r1.getTopRightX() - r2.getTopLeftX();
 				overlapLength = r2.getTopLeftY() - r2.getBotLeftY();
 			//r2 engulfs r1
-			} else if (r2.getTopLeftY() > r1.getTopRightY() && r2.getBotLeftY() < r1.getBotRightY()) {
+			} else if (r2.getTopLeftY() >= r1.getTopRightY() && r2.getBotLeftY() <= r1.getBotRightY()) {
 				overlapWidth = r2.getTopLeftX() - r1.getTopRightX();
 				overlapLength = r1.getTopRightY() - r2.getBotRightY();
 			//r1 top right corner overlaps with r2 bottom left corner
-			} else if (r1.getTopRightX() > r2.getBotLeftX() && r1.getTopRightY() > r2.getBotLeftY()) {
+			} else if (r1.getTopRightY() < r2.getTopLeftY() && r1.getBotRightY() < r2.getBotLeftY()) {
 				overlapWidth = r1.getTopRightX() - r2.getBotLeftX();
 				overlapLength = r1.getTopRightY() - r2.getBotLeftY();
 			//r1 bottom right corner overlaps with r2 top left corner
-			} else if (r1.getBotRightX() > r2.getBotLeftX() && r1.getBotRightY() < r2.getTopLeftY()) {
+			} else if (r1.getBotRightY() > r2.getBotLeftY() && r1.getTopRightY() > r2.getTopLeftY()) {
 				overlapWidth = r1.getBotRightX() - r2.getTopLeftX();
 				overlapLength = r2.getTopLeftY() - r1.getBotRightY();
 			
@@ -243,19 +263,19 @@ public class Rectangle {
 		//r2 is on the left
 		} else if (r1.getTopRightX() > r2.getTopRightX()) {
 			//r1 engulfs r2
-			if (r1.getTopLeftY() > r2.getTopRightY() && r1.getBotLeftY() < r2.getBotRightY()) {
+			if (r1.getTopLeftY() >= r2.getTopRightY() && r1.getBotLeftY() <= r2.getBotRightY()) {
 				overlapWidth = r2.getTopRightX() - r1.getTopLeftX();
 				overlapLength = r2.getTopRightY() - r2.getBotRightY();
 			//r2 engulfs r1
-			} else if (r2.getTopRightY() > r1.getTopLeftY() && r2.getBotRightY() < r1.getBotLeftY()) {
+			} else if (r2.getTopRightY() >= r1.getTopLeftY() && r2.getBotRightY() <= r1.getBotLeftY()) {
 				overlapWidth = r2.getTopRightX() - r1.getTopLeftX();
 				overlapLength = r1.getTopLeftY() - r1.getBotLeftY();
 			//r2 top right corner overlaps with r1 bottom left corner
-			} else if (r2.getTopRightX() > r1.getBotLeftX() && r2.getTopRightY() > r1.getBotLeftY()) {
+			} else if (r2.getTopRightY() < r1.getTopLeftY() && r2.getTopRightY() > r1.getBotLeftY()) {
 				overlapWidth = r2.getTopRightX() - r1.getBotLeftX();
 				overlapLength = r2.getTopRightY() - r1.getBotLeftY();
 			//r2 bottom right corner overlaps with r1 top left corner
-			} else if (r2.getBotRightX() > r1.getBotLeftX() && r2.getBotRightY() < r1.getTopLeftY()) {
+			} else if (r2.getBotRightY() > r1.getBotLeftY() && r2.getTopRightY() > r1.getTopLeftY()) {
 				overlapWidth = r2.getBotRightX() - r1.getTopLeftX();
 				overlapLength = r1.getTopLeftY() - r2.getBotRightY();
 			}
@@ -265,7 +285,7 @@ public class Rectangle {
 	 * Post: Length and width of the mini-rectangle caused by overlap
 	 * Action: Returns string of the mini-rectangle's dimensions*/
 	public static String getOverlapDimensions () {
-		String dimensions = "Length: " + overlapLength + ", Width: " + overlapWidth;
+		String dimensions = "Length: " + overlapLength + "cm, Width: " + overlapWidth + "cm";
 		return dimensions;
 	}
 
